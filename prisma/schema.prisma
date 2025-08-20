@@ -1,0 +1,220 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserAccount {
+  id           String        @id @default(uuid()) @map("id")
+  firstName    String        @map("first_name")
+  lastName     String        @map("last_name")
+  email        String        @unique @map("email")
+  password     String        @map("password")
+  phone        String?       @map("phone")
+  roleId       String        @map("role_id")
+  role         Role          @relation(fields: [roleId], references: [id])
+  resetToken   String?       @map("reset_token")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime?     @map("updated_at")
+  addresses    Address[]
+  productLikes ProductLike[]
+  cart         Cart?
+  order        Order[]
+
+  @@map("users")
+}
+
+model Role {
+  id    String        @id @default(uuid()) @map("id")
+  name  String        @map("name")
+  users UserAccount[]
+
+  @@map("roles")
+}
+
+model Address {
+  id        String      @id @default(uuid()) @map("id")
+  street    String      @map("street")
+  city      String      @map("city")
+  state     String      @map("state")
+  country   String      @map("country")
+  userId    String      @map("user_id")
+  user      UserAccount @relation(fields: [userId], references: [id])
+  order     Order[]
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@map("addresses")
+}
+
+model Product {
+  id                String              @id @default(uuid()) @map("id")
+  name              String              @map("name")
+  description       String              @map("description")
+  specification     String?             @map("specification")
+  price             Float               @map("price")
+  code              Int                 @unique @map("code")
+  isEnable          Boolean             @map("is_enable")
+  vendorId          String              @map("vendor_id")
+  vendor            Vendor              @relation(fields: [vendorId], references: [id])
+  productCategories ProductCategories[]
+  inventories       Inventory[]
+  images            Image[]
+  cartItems         CartItem[]
+  orderItem         OrderItem[]
+  createdAt         DateTime            @default(now()) @map("created_at")
+
+  @@map("products")
+}
+
+model Vendor {
+  id       String    @id @default(uuid()) @map("id")
+  name     String    @map("name")
+  products Product[]
+
+  @@map("vendors")
+}
+
+model Image {
+  id        String  @id @default(uuid()) @map("id")
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+  mainImage Boolean @map("main_image")
+  title     String? @map("title")
+  path      String  @map("path")
+
+  @@map("images")
+}
+
+model Category {
+  id                String              @id @default(uuid()) @map("id")
+  name              String              @map("name")
+  description       String?             @map("description")
+  productCategories ProductCategories[]
+
+  @@map("categories")
+}
+
+model ProductCategories {
+  id         String   @id @default(uuid()) @map("id")
+  productId  String   @map("product_id")
+  product    Product  @relation(fields: [productId], references: [id])
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("product_categories")
+}
+
+model Store {
+  id          String      @id @default(uuid()) @map("id")
+  name        String      @map("name")
+  inventories Inventory[]
+
+  @@map("stores")
+}
+
+model Inventory {
+  id           String        @id @default(uuid()) @map("id")
+  quantity     Int           @map("quantity")
+  productId    String        @map("product_id")
+  product      Product       @relation(fields: [productId], references: [id])
+  storeId      String        @map("store_id")
+  store        Store         @relation(fields: [storeId], references: [id])
+  productLikes ProductLike[]
+
+  @@map("inventories")
+}
+
+model ProductLike {
+  id          String      @id @default(uuid()) @map("id")
+  userId      String      @map("user_id")
+  user        UserAccount @relation(fields: [userId], references: [id])
+  inventoryId String      @map("inventory_id")
+  inventory   Inventory   @relation(fields: [inventoryId], references: [id])
+  likedAt     DateTime    @default(now()) @map("liked_at")
+
+  @@map("product_likes")
+}
+
+model Cart {
+  id        String      @id @default(uuid()) @map("id")
+  userId    String      @unique @map("user_id")
+  user      UserAccount @relation(fields: [userId], references: [id])
+  cartItems CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(uuid()) @map("id")
+  cartId    String  @map("cart_id")
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId String  @map("prouct_id")
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @map("quantity")
+  price     Float   @map("price")
+
+  @@map("cart_items")
+}
+
+model Order {
+  id             String      @id @default(uuid()) @map("id")
+  userId         String      @map("user_id")
+  user           UserAccount @relation(fields: [userId], references: [id])
+  status         OrderStatus @map("status")
+  orderItem      OrderItem[]
+  paymentId      String      @unique @map("payment_id")
+  payment        Payment     @relation(fields: [paymentId], references: [id])
+  totalAmount    Float       @map("total_amount")
+  subtotalAmount Float       @map("subtotal_amount")
+  addressId      String      @map("address_id")
+  address        Address     @relation(fields: [addressId], references: [id])
+  orderedAt      DateTime    @map("ordered_at")
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  Pending
+  Paid
+  Completed
+  Cancelled
+}
+
+model OrderItem {
+  id        String  @id @default(uuid()) @map("id")
+  orderId   String  @map("order_id")
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @map("quantity")
+  price     Float   @map("price")
+
+  @@map("order_items")
+}
+
+model Payment {
+  id       String        @id @default(uuid()) @map("id")
+  amount   Float         @map("amount")
+  currency String        @map("currency")
+  status   PaymentStatus @map("status")
+  stripeId String        @map("stripe_id")
+  order    Order?
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+  Cancelled
+}
