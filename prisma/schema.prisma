@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -36,7 +35,7 @@ model UserAccount {
 
 model Role {
   id    String        @id @default(uuid()) @map("id")
-  name  String        @map("name")
+  name  String        @unique @map("name")
   users UserAccount[]
 
   @@map("roles")
@@ -78,7 +77,7 @@ model Product {
 
 model Vendor {
   id       String    @id @default(uuid()) @map("id")
-  name     String    @map("name")
+  name     String    @unique @map("name")
   products Product[]
 
   @@map("vendors")
@@ -97,7 +96,7 @@ model Image {
 
 model Category {
   id                String              @id @default(uuid()) @map("id")
-  name              String              @map("name")
+  name              String              @unique @map("name")
   description       String?             @map("description")
   productCategories ProductCategories[]
 
@@ -116,7 +115,7 @@ model ProductCategories {
 
 model Store {
   id          String      @id @default(uuid()) @map("id")
-  name        String      @map("name")
+  name        String      @unique @map("name")
   inventories Inventory[]
 
   @@map("stores")

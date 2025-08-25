@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PrismaService } from './prisma/prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { RoleService } from './role/role.service';
 
 @Module({
   imports: [
@@ -16,18 +19,23 @@ import { ThrottlerModule } from '@nestjs/throttler';
           .default('development'),
         DATABASE_URL: Joi.string().required(),
         PORT: Joi.number().port().default(3000),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION_TIME: Joi.string().default('15m'),
       }),
     }),
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 50000,
-          limit: 10,
+          ttl: 30000,
+          limit: 3,
         },
       ],
     }),
+    UserModule,
+    PrismaModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [PrismaService, RoleService],
 })
 export class AppModule {}
