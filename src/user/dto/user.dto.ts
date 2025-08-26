@@ -93,3 +93,14 @@ export class UserResponseDto extends OmitType(CreateUserDto, [
   @Exclude()
   password: string;
 }
+
+export class UserSignInResponseDto {
+  @IsUUID()
+  id!: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  token: string;
+}

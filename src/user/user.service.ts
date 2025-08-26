@@ -1,9 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserAccount } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -71,7 +71,7 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<any> {
+  async findByEmail(email: string): Promise<UserAccount> {
     try {
       return await this.prisma.userAccount.findUniqueOrThrow({
         where: { email: email },

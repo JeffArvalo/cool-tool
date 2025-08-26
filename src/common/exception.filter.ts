@@ -30,8 +30,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message = `Database error: ${exception.message}`;
       name = exception.name;
 
-      let prismaCode = exception.code;
-      let cause = exception.cause;
+      const prismaCode = exception.code;
+      const cause = exception.cause;
 
       switch (exception.code) {
         case 'P2000':
@@ -73,7 +73,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message = 'Invalid JWT';
     }
 
-    response.status(status).json({
+    return response.status(status).json({
       statusCode: status,
       message,
       name,

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
   EmailUserDto,
   PasswordUserDto,
@@ -11,7 +7,6 @@ import {
   UserResponseDto,
 } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
-import { Unauthorized } from 'http-errors';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { JwtService } from '@nestjs/jwt';
@@ -28,15 +23,11 @@ export class AuthService {
   ) {}
 
   async validateUser(user: SignInUserDto): Promise<UserResponseDto> {
-    try {
-      const foundUser = await this.userService.findByEmail(user.email);
-      if (!(await bcrypt.compare(user.password, foundUser.password))) {
-        throw new UnauthorizedException('Invalid password');
-      }
-      return plainToInstance(UserResponseDto, foundUser);
-    } catch (e) {
-      throw e;
+    const foundUser = await this.userService.findByEmail(user.email);
+    if (!(await bcrypt.compare(user.password, foundUser.password))) {
+      throw new UnauthorizedException('Invalid password');
     }
+    return plainToInstance(UserResponseDto, foundUser);
   }
 
   async login(user: UserResponseDto) {
@@ -60,52 +51,44 @@ export class AuthService {
   }
 
   async forgotPassword(emailUser: EmailUserDto) {
-    try {
-      const user = await this.userService.findByEmail(emailUser.email);
-      const payload = {
-        sub: { id: user.id, email: user.email },
-      };
-      const token = this.jwtService.sign(payload, { expiresIn: '1h' });
-      const hasedToken = await bcrypt.hash(token, 10);
-      await this.userService.updateUser(user.id, {
-        resetToken: hasedToken,
-      });
-      return token;
-    } catch (e) {
-      throw e;
-    }
+    const user = await this.userService.findByEmail(emailUser.email);
+    const payload = {
+      sub: { id: user.id, email: user.email },
+    };
+    const token = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const hasedToken = await bcrypt.hash(token, 10);
+    await this.userService.updateUser(user.id, {
+      resetToken: hasedToken,
+    });
+    return token;
   }
 
   async resetPassword(tokenDto: TokenUserDto, newPasswordDto: PasswordUserDto) {
-    try {
-      const validateToken = this.jwtService.verify(tokenDto.token);
-      if (!validateToken) {
-        throw new UnauthorizedException();
+    const validateToken = this.jwtService.verify(tokenDto.token);
+    if (!validateToken) {
+      throw new UnauthorizedException();
+    }
+
+    const decoded: any = this.jwtService.decode(tokenDto.token);
+    const user = await this.userService.findById(decoded.sub.id);
+
+    if (user.resetToken) {
+      const isTokenValid = await bcrypt.compare(
+        tokenDto.token,
+        user.resetToken,
+      );
+      if (!isTokenValid) {
+        throw new UnauthorizedException('Invalid reset token');
       }
 
-      const decoded = this.jwtService.decode(tokenDto.token);
-      const user = await this.userService.findById(decoded.sub.id);
+      const updatedUser = await this.userService.updateUser(user.id, {
+        password: newPasswordDto.newPassword,
+        resetToken: null,
+      });
 
-      if (user.resetToken) {
-        const isTokenValid = await bcrypt.compare(
-          tokenDto.token,
-          user.resetToken,
-        );
-        if (!isTokenValid) {
-          throw new UnauthorizedException('Invalid reset token');
-        }
-
-        const updatedUser = await this.userService.updateUser(user.id, {
-          password: newPasswordDto.newPassword,
-          resetToken: null,
-        });
-
-        return updatedUser;
-      } else {
-        throw new UnauthorizedException('No reset token found for this user');
-      }
-    } catch (e) {
-      throw e;
+      return updatedUser;
+    } else {
+      throw new UnauthorizedException('No reset token found for this user');
     }
   }
   isTokenBlacklisted(token: string): boolean {

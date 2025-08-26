@@ -1,24 +1,22 @@
 import {
-  BadRequestException,
   Body,
   ConflictException,
   Controller,
   Get,
   Post,
   Req,
-  UnprocessableEntityException,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/user.dto';
-import { Prisma } from '@prisma/client';
-import { Conflict } from 'http-errors';
 import { RoleService } from 'src/role/role.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
+import { CurrentUser } from 'src/auth/strategies/types/current-user';
 
 @Controller('user')
 export class UserController {
@@ -34,8 +32,9 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@Req() req) {
-    return this.userService.findById(req.user.id);
+  async getProfile(@Req() req: Request) {
+    const user: CurrentUser = req.user as CurrentUser;
+    return this.userService.findById(user.id);
   }
 
   @Roles('manager')

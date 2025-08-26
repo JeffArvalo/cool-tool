@@ -3,21 +3,23 @@ import {
   BadRequestException,
   Body,
   Controller,
-  NotFoundException,
   Post,
   Query,
-  Request,
   UnauthorizedException,
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Req,
 } from '@nestjs/common';
+import type { Request as RequestType } from 'express';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import {
   EmailUserDto,
   PasswordUserDto,
   TokenUserDto,
+  UserResponseDto,
+  UserSignInResponseDto,
 } from 'src/user/dto/user.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { plainToInstance } from 'class-transformer';
@@ -29,15 +31,17 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  async signInUser(@Request() req) {
-    const token = await this.authService.login(req.user);
-    return { userId: req.user.id, email: req.user.email, token: token };
+  async signInUser(@Req() req: RequestType): Promise<UserSignInResponseDto> {
+    const user = req.user as UserResponseDto;
+    const token = await this.authService.login(user);
+    return { id: user.id, email: user.email, token: token };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('signout')
-  async signOutUser(@Request() req) {
-    this.authService.signOut(req.headers.authorization.replace('Bearer ', ''));
+  signOutUser(@Req() req: RequestType) {
+    const token = req.headers?.authorization?.replace('Bearer ', '');
+    this.authService.signOut(token || '');
     return { message: 'User signed out successfully' };
   }
 

@@ -1,10 +1,10 @@
-import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import { AllExceptionsFilter } from './common/exception.filter';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { cors: true });
   const configService = app.get(ConfigService);
 
@@ -13,4 +13,6 @@ async function bootstrap() {
   app.use(helmet());
   await app.listen(configService.get<number>('PORT') ?? 3000);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  throw err;
+});
