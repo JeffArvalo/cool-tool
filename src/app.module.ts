@@ -11,6 +11,16 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ProductModule } from './product/product.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { VendorService } from './vendor/vendor.service';
+import { ImageResolver } from './image/image.resolver';
+import { ImageService } from './image/image.service';
+import { CategoryService } from './category/category.service';
+import { CartService } from './cart/cart.service';
+import { CartModule } from './cart/cart.module';
+import { ProductService } from './product/product.service';
+import { PaymentModule } from './payment/payment.module';
+import { PaymentService } from './payment/payment.service';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -25,6 +35,9 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
         PORT: Joi.number().port().default(3000),
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION_TIME: Joi.string().default('15m'),
+        STRIPE_SECRET_KEY: Joi.string().required(),
+        WEB_HOOK_SECRET: Joi.string().required(),
+        STRIPE_API_KEY: Joi.string().required(),
       }),
     }),
     ThrottlerModule.forRoot({
@@ -45,8 +58,21 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     ProductModule,
+    CartModule,
+    PaymentModule.forRootAsync(),
+    OrderModule,
   ],
   controllers: [],
-  providers: [PrismaService, RoleService],
+  providers: [
+    PrismaService,
+    RoleService,
+    VendorService,
+    ImageService,
+    ImageResolver,
+    CategoryService,
+    CartService,
+    ProductService,
+    PaymentService,
+  ],
 })
 export class AppModule {}

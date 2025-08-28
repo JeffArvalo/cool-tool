@@ -130,6 +130,7 @@ model Inventory {
   store        Store         @relation(fields: [storeId], references: [id])
   productLikes ProductLike[]
 
+  @@unique([storeId, productId])
   @@map("inventories")
 }
 
@@ -157,11 +158,12 @@ model CartItem {
   id        String  @id @default(uuid()) @map("id")
   cartId    String  @map("cart_id")
   cart      Cart    @relation(fields: [cartId], references: [id])
-  productId String  @map("prouct_id")
+  productId String  @map("product_id")
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int     @map("quantity")
   price     Float   @map("price")
 
+  @@unique([cartId, productId])
   @@map("cart_items")
 }
 
