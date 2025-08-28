@@ -5,6 +5,7 @@ import {
   SignInUserDto,
   TokenUserDto,
   UserResponseDto,
+  UserSignInResponseDto,
 } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -30,12 +31,13 @@ export class AuthService {
     return plainToInstance(UserResponseDto, foundUser);
   }
 
-  async login(user: UserResponseDto) {
+  async login(user: UserResponseDto): Promise<UserSignInResponseDto> {
     const role = await this.roleService.findById(user.roleId);
     const payload = {
       sub: { id: user.id, email: user.email, role: role?.name },
     };
-    return this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload);
+    return { id: user.id, email: user.email, token: token };
   }
 
   signOut(token: string) {
@@ -45,6 +47,7 @@ export class AuthService {
       if (exp) {
         tokenBlacklist.push({ token, expiresAt: exp * 1000 });
       }
+      return { message: 'User signed out successfully' };
     } catch (e) {
       console.error(e);
     }
@@ -60,7 +63,10 @@ export class AuthService {
     await this.userService.updateUser(user.id, {
       resetToken: hasedToken,
     });
-    return token;
+    return {
+      message: 'Your token to reset password, expired in 1 hour',
+      token,
+    };
   }
 
   async resetPassword(tokenDto: TokenUserDto, newPasswordDto: PasswordUserDto) {
@@ -81,12 +87,12 @@ export class AuthService {
         throw new UnauthorizedException('Invalid reset token');
       }
 
-      const updatedUser = await this.userService.updateUser(user.id, {
+      await this.userService.updateUser(user.id, {
         password: newPasswordDto.newPassword,
         resetToken: null,
       });
 
-      return updatedUser;
+      return { message: 'Password reset successfully' };
     } else {
       throw new UnauthorizedException('No reset token found for this user');
     }

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import type { Request } from 'express';
 import { ROLES_KEY } from 'src/auth/decorator/roles.decorator';
 import { CurrentUser } from 'src/auth/strategies/types/current-user';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -16,8 +17,16 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
-    const user = context.switchToHttp().getRequest<Request>()
-      .user as CurrentUser;
+
+    let user: CurrentUser;
+
+    if (context.getType<'graphql'>() === 'graphql') {
+      const gqlContext = GqlExecutionContext.create(context).getContext();
+      user = gqlContext.req?.user;
+    } else {
+      const httpContext = context.switchToHttp().getRequest<Request>();
+      user = httpContext.user as CurrentUser;
+    }
     const hasRequiredRole = requiredRoles.some((role) => user.role === role);
     return hasRequiredRole;
   }

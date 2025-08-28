@@ -9,7 +9,7 @@ import { Prisma, UserAccount } from '@prisma/client';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllUsers(): Promise<unknown> {
+  async getAllUsers(): Promise<UserResponseDto[]> {
     return this.prisma.userAccount.findMany();
   }
 
