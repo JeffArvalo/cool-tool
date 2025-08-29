@@ -7,9 +7,9 @@ import {
   EmailUserDto,
   PasswordUserDto,
   TokenUserDto,
-  UserResponseDto,
   UserSignInResponseDto,
-} from 'src/user/dto/user.dto';
+} from 'src/user/dto/sign-user.dto';
+import { UserResponseDto } from 'src/user/dto/response-user.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')

@@ -4,9 +4,9 @@ import {
   PasswordUserDto,
   SignInUserDto,
   TokenUserDto,
-  UserResponseDto,
   UserSignInResponseDto,
-} from 'src/user/dto/user.dto';
+} from 'src/user/dto/sign-user.dto';
+import { UserResponseDto } from 'src/user/dto/response-user.dto';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';

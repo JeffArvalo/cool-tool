@@ -21,6 +21,7 @@ import { ProductService } from './product/product.service';
 import { PaymentModule } from './payment/payment.module';
 import { PaymentService } from './payment/payment.service';
 import { OrderModule } from './order/order.module';
+import { OrderItemService } from './order-item/order-item.service';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { OrderModule } from './order/order.module';
     CartService,
     ProductService,
     PaymentService,
+    OrderItemService,
   ],
 })
 export class AppModule {}
