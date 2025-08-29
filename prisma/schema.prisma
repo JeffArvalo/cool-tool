@@ -49,7 +49,6 @@ model Address {
   country   String      @map("country")
   userId    String      @map("user_id")
   user      UserAccount @relation(fields: [userId], references: [id])
-  order     Order[]
   createdAt DateTime    @default(now()) @map("created_at")
 
   @@map("addresses")
@@ -177,9 +176,7 @@ model Order {
   payment        Payment     @relation(fields: [paymentId], references: [id])
   totalAmount    Float       @map("total_amount")
   subtotalAmount Float       @map("subtotal_amount")
-  addressId      String      @map("address_id")
-  address        Address     @relation(fields: [addressId], references: [id])
-  orderedAt      DateTime    @map("ordered_at")
+  orderedAt      DateTime    @default(now()) @map("ordered_at")
 
   @@map("orders")
 }
@@ -208,7 +205,7 @@ model Payment {
   amount   Float         @map("amount")
   currency String        @map("currency")
   status   PaymentStatus @map("status")
-  stripeId String        @map("stripe_id")
+  stripeId String        @unique() @map("stripe_id")
   order    Order?
 
   @@map("payments")

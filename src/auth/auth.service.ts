@@ -37,7 +37,7 @@ export class AuthService {
       sub: { id: user.id, email: user.email, role: role?.name },
     };
     const token = this.jwtService.sign(payload);
-    return { id: user.id, email: user.email, token: token };
+    return { id: user.id, email: user.email, token: `bearer ${token}` };
   }
 
   signOut(token: string) {

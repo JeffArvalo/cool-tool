@@ -1,7 +1,29 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
+import { OrderItem } from 'src/order-item/entities/orderItem.entity';
 
 @ObjectType()
 export class Order {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID, { nullable: true })
+  userId?: string | null;
+
+  @Field(() => String)
+  status: string;
+
+  @Field(() => ID, { nullable: true })
+  payment?: string | null;
+
+  @Field(() => Float)
+  totalAmount: number;
+
+  @Field(() => Float)
+  subtotalAmount: number;
+
+  @Field(() => ID, { nullable: true })
+  addressId?: string | null;
+
+  @Field(() => [OrderItem])
+  orderItems: OrderItem[];
 }

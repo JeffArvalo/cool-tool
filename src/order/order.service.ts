@@ -1,26 +1,63 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderInput } from './dto/create-order.input';
 import { UpdateOrderInput } from './dto/update-order.input';
+import { Prisma, OrderStatus } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { GetOrderInput } from './dto/get-order.input';
 
 @Injectable()
 export class OrderService {
-  create(createOrderInput: CreateOrderInput) {
-    return 'This action adds a new order';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createOrderInput: CreateOrderInput, userId: string) {
+    const { paymentId, subtotalAmount, totalAmount, orderItems } =
+      createOrderInput;
+
+    console.log(createOrderInput);
+
+    console.log(userId);
+
+    return await this.prisma.$transaction(async (prisma) => {
+      const order = await prisma.order.create({
+        data: {
+          userId,
+          status: OrderStatus.Pending,
+          paymentId,
+          totalAmount,
+          subtotalAmount,
+        },
+      });
+      console.log(order);
+
+      await prisma.orderItem.createMany({
+        data: orderItems.map((item) => ({
+          orderId: order.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      });
+
+      return order;
+    });
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async findAll(filter?: Prisma.OrderWhereInput) {
+    return await this.prisma.order.findMany({
+      where: filter,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(getOrderInput: GetOrderInput) {
+    return await this.prisma.order.findUnique({
+      where: { id: getOrderInput.id },
+    });
   }
 
-  update(id: number, updateOrderInput: UpdateOrderInput) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async update(updateOrderInput: UpdateOrderInput) {
+    return await this.prisma.order.update({
+      where: { id: updateOrderInput.id },
+      data: updateOrderInput,
+    });
   }
 }

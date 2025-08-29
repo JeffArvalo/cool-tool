@@ -3,11 +3,15 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { OrderModule } from 'src/order/order.module';
+import { OrderService } from 'src/order/order.service';
 
 @Module({
-  providers: [PaymentService],
+  providers: [PaymentService, PrismaService, OrderService],
   controllers: [PaymentController],
-  imports: [ConfigModule],
+  imports: [ConfigModule, PrismaModule, OrderModule],
   exports: ['STRIPE_CLIENT', PaymentService],
 })
 export class PaymentModule {

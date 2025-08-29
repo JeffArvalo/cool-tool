@@ -3,7 +3,7 @@ import { CartItem } from './cartItem.entity';
 
 @ObjectType()
 export class Cart {
-  @Field(() => ID, { nullable: true })
+  @Field(() => ID)
   id: string;
 
   @Field(() => [CartItem])

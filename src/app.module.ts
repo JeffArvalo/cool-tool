@@ -22,6 +22,9 @@ import { PaymentModule } from './payment/payment.module';
 import { PaymentService } from './payment/payment.service';
 import { OrderModule } from './order/order.module';
 import { OrderItemService } from './order-item/order-item.service';
+import { OrderItemResolver } from './order-item/order-item.resolver';
+import { OrderItemModule } from './order-item/order-item.module';
+import { ProductDataLoader } from './common/dataloaders/product.dataloader';
 
 @Module({
   imports: [
@@ -62,6 +65,7 @@ import { OrderItemService } from './order-item/order-item.service';
     CartModule,
     PaymentModule.forRootAsync(),
     OrderModule,
+    OrderItemModule,
   ],
   controllers: [],
   providers: [
@@ -75,6 +79,8 @@ import { OrderItemService } from './order-item/order-item.service';
     ProductService,
     PaymentService,
     OrderItemService,
+    OrderItemResolver,
+    ProductDataLoader,
   ],
 })
 export class AppModule {}
