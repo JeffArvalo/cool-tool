@@ -25,6 +25,11 @@ import { OrderItemService } from './order-item/order-item.service';
 import { OrderItemResolver } from './order-item/order-item.resolver';
 import { OrderItemModule } from './order-item/order-item.module';
 import { ProductDataLoader } from './common/dataloaders/product.dataloader';
+import { GraphQLUpload } from 'graphql-upload-ts';
+import { CloudinaryResolver } from './cloudinary/cloudinary.resolver';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { RedisModule } from './redis/redis.module';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -42,6 +47,13 @@ import { ProductDataLoader } from './common/dataloaders/product.dataloader';
         STRIPE_SECRET_KEY: Joi.string().required(),
         WEB_HOOK_SECRET: Joi.string().required(),
         STRIPE_API_KEY: Joi.string().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().port().default(6379),
+        REDIS_PASSWORD: Joi.string().optional(),
+        REDIS_USERNAME: Joi.string().default('default'),
+        CLOUDINARY_CLOUD_NAME: Joi.string().required(),
+        CLOUDINARY_API_KEY: Joi.string().required(),
+        CLOUDINARY_API_SECRET: Joi.string().required(),
       }),
     }),
     ThrottlerModule.forRoot({
@@ -52,6 +64,7 @@ import { ProductDataLoader } from './common/dataloaders/product.dataloader';
         },
       ],
     }),
+    RedisModule,
     UserModule,
     PrismaModule,
     AuthModule,
@@ -60,12 +73,16 @@ import { ProductDataLoader } from './common/dataloaders/product.dataloader';
       driver: ApolloDriver,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      buildSchemaOptions: {
+        scalarsMap: [{ type: Object, scalar: GraphQLUpload }],
+      },
     }),
     ProductModule,
     CartModule,
     PaymentModule.forRootAsync(),
     OrderModule,
     OrderItemModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [
@@ -81,6 +98,8 @@ import { ProductDataLoader } from './common/dataloaders/product.dataloader';
     OrderItemService,
     OrderItemResolver,
     ProductDataLoader,
+    CloudinaryResolver,
+    CloudinaryService,
   ],
 })
 export class AppModule {}
