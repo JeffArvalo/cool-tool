@@ -37,20 +37,26 @@ yarn install
 ENV_MODE = "development"
 PORT=PORT
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
-
+JWT_SECRET="JWT_SECRET"
+JWT_EXPIRATION_TIME="15m"
+STRIPE_SECRET_KEY="STRIPE_SECRET_KEY"
+WEB_HOOK_SECRET="WEB_HOOK_SECRET"
+STRIPE_API_KEY="STRIPE_API_KEY"
+REDIS_HOST="REDIS_HOST"
+REDIS_PORT=REDIS_PORT
+REDIS_PASSWORD="REDIS_PASSWORD"
+REDIS_USERNAME="default"
+CLOUDINARY_CLOUD_NAME = "cloud_name"
+CLOUDINARY_API_KEY = "CLOUDINARY_API_KEY",
+CLOUDINARY_API_SECRET: "CLOUDINARY_API_SECRET"
 ```
 
 ### 4. Migrate Prisma schemas
 
 ```bash
-npx prisma migrate dev
+npm run migrate:dev
 ```
 
-If you are using an unexisting database use this command to create the database and migrate Prisma:
-
-```bash
-npx prisma migrate dev --name init
-```
 
 ### 5. Generate Prisma schemas
 
@@ -58,8 +64,15 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
+### 7. Generate Prisma seeds
+
+```bash
+npx prisma generate
+```
+
+
 ### 6. Start server
 
 ```bash
-npm run start
+npm run start:dev
 ```
