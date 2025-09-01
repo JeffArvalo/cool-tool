@@ -29,6 +29,7 @@ import { GraphQLUpload } from 'graphql-upload-ts';
 import { CloudinaryResolver } from './cloudinary/cloudinary.resolver';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { RedisModule } from './redis/redis.module';
+import { ProductLikeModule } from './product-like/product-like.module';
 import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
@@ -83,6 +84,7 @@ import * as redisStore from 'cache-manager-redis-store';
     OrderModule,
     OrderItemModule,
     RedisModule,
+    ProductLikeModule,
   ],
   controllers: [],
   providers: [

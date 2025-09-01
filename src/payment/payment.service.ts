@@ -89,7 +89,7 @@ export class PaymentService {
 
   async handleWebhook(event: Stripe.Event, sig: string) {
     if (!event || !event.type)
-      throw new BadRequestException("Not a stripe event")
+      throw new BadRequestException('Not a stripe event');
 
     switch (event.type) {
       case 'checkout.session.completed':

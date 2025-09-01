@@ -141,6 +141,7 @@ model ProductLike {
   inventory   Inventory   @relation(fields: [inventoryId], references: [id])
   likedAt     DateTime    @default(now()) @map("liked_at")
 
+  @@unique([userId, inventoryId])
   @@map("product_likes")
 }
 
