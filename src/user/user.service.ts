@@ -11,10 +11,6 @@ import { Prisma, UserAccount } from '@prisma/client';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllUsers(): Promise<UserResponseDto[]> {
-    return this.prisma.userAccount.findMany();
-  }
-
   async findById(id: string): Promise<UserResponseDto> {
     try {
       const user = await this.prisma.userAccount.findUniqueOrThrow({

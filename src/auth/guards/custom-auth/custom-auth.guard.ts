@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 import { RolesGuard } from '../roles/roles.guard';
@@ -21,7 +22,7 @@ export class CustomAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     if (!request.headers.authorization) {
       const role = await this.getClientRoleId();
-
+      if (!request.body) throw new NotFoundException('Request body not found');
       if (request.body.roleId === role?.id) {
         return true;
       }

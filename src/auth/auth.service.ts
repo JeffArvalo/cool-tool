@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { JwtService } from '@nestjs/jwt';
 import { RoleService } from 'src/role/role.service';
+import { RedisService } from 'src/redis/redis.service';
 
 let tokenBlacklist: { token: string; expiresAt: number }[] = [];
 
@@ -21,6 +22,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly roleService: RoleService,
+    private readonly redisService: RedisService,
   ) {}
 
   async validateUser(user: SignInUserDto): Promise<UserResponseDto> {
@@ -40,12 +42,18 @@ export class AuthService {
     return { id: user.id, email: user.email, token: `bearer ${token}` };
   }
 
-  signOut(token: string) {
+  async signOut(token: string) {
     try {
-      const decoded: any = this.jwtService.decode(token);
+      const cleanToken = token.replace(/^bearer\s+/i, '');
+      const decoded: any = this.jwtService.decode(cleanToken);
       const exp = decoded?.exp;
       if (exp) {
-        tokenBlacklist.push({ token, expiresAt: exp * 1000 });
+        const currentTime = Math.floor(Date.now() / 1000);
+        const ttl = exp - currentTime;
+
+        if (ttl > 0) {
+          await this.redisService.blacklistToken(cleanToken, ttl);
+        }
       }
       return { message: 'User signed out successfully' };
     } catch (e) {
@@ -97,10 +105,13 @@ export class AuthService {
       throw new UnauthorizedException('No reset token found for this user');
     }
   }
-  isTokenBlacklisted(token: string): boolean {
-    const now = Date.now();
-    tokenBlacklist = tokenBlacklist.filter((entry) => entry.expiresAt >= now);
-
-    return tokenBlacklist.some((entry) => entry.token.includes(token));
+  async isTokenBlacklisted(token: string): Promise<boolean> {
+    try {
+      const cleanToken = token.replace(/^bearer\s+/i, '');
+      return await this.redisService.isTokenBlacklisted(cleanToken);
+    } catch (error) {
+      console.error('Error checking blacklist:', error);
+      return false;
+    }
   }
 }

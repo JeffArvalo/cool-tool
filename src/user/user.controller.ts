@@ -11,16 +11,10 @@ import { CustomAuthGuard } from 'src/auth/guards/custom-auth/custom-auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  async getAllUsers() {
-    return this.userService.getAllUsers();
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Req() req: Request) {
-    const user = req.user as CurrentUser;
-    return this.userService.findById(user.id);
+    return this.userService.findById((req.user as CurrentUser).id);
   }
 
   @Roles('manager')

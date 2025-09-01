@@ -9,12 +9,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.stategy';
 import { RoleService } from 'src/role/role.service';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule,
     PrismaModule,
     UserModule,
+    RedisModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
