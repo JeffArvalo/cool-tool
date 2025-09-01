@@ -15,11 +15,7 @@ import { CurrentUser } from 'src/auth/strategies/types/current-user';
 
 @Controller('')
 export class PaymentController {
-  constructor(
-    private readonly paymentService: PaymentService,
-    @Inject('STRIPE_CLIENT')
-    private readonly stripeClient: { stripe: Stripe; webhookSecret: string },
-  ) {}
+  constructor(private readonly paymentService: PaymentService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('checkout')

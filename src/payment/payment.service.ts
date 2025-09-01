@@ -1,11 +1,11 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { CurrentUser } from 'src/auth/strategies/types/current-user';
-import { OrderService } from 'src/order/order.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Stripe } from 'stripe';
 
@@ -15,7 +15,6 @@ export class PaymentService {
     @Inject('STRIPE_CLIENT')
     private readonly stripeClient: { stripe: Stripe; webhookSecret: string },
     private readonly prisma: PrismaService,
-    private readonly orderService: OrderService,
   ) {}
 
   async createCheckoutSession(user: CurrentUser) {
@@ -89,6 +88,9 @@ export class PaymentService {
   }
 
   async handleWebhook(event: Stripe.Event, sig: string) {
+    if (!event || !event.type)
+      throw new BadRequestException("Not a stripe event")
+
     switch (event.type) {
       case 'checkout.session.completed':
         const checkout = event.data.object;
