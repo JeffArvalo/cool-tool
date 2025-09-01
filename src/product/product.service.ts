@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  CreateProductInput,
-  DeleteProductInput,
   ProductConnection,
   ProductsPaginationInput,
   SearchProductInput,
-  UpdateProductInput,
-} from './dto/product.dto';
+} from './dto/connection-product';
+import { CreateProductInput } from './dto/create-product.dto';
+import { UpdateProductInput } from './dto/update-product.dto';
+import { DeleteProductInput } from './dto/delete-product.dto';
 
 @Injectable()
 export class ProductService {

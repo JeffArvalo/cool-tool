@@ -4,7 +4,7 @@ import { CartResolver } from './cart.resolver';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ProductService } from 'src/product/product.service';
 import { ProductDataLoader } from '../common/dataloaders/product.dataloader';
-import { CartItemResolver } from './cartItem.resolver';
+import { CartItemResolver } from '../cart-item/cart-item.resolver';
 
 @Module({
   providers: [

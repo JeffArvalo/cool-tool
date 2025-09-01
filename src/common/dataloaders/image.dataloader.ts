@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader';
 import { Injectable, Scope } from '@nestjs/common';
 import { ImageService } from 'src/image/image.service';
-import { Image } from 'src/image/image.model';
+import { Image } from 'src/image/entities/image.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ImageDataLoader {

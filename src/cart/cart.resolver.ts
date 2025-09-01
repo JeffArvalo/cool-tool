@@ -15,7 +15,7 @@ import { UseGuards } from '@nestjs/common';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
-import { CartItem } from './entities/cartItem.entity';
+import { CartItem } from 'src/cart-item/entities/cart-item.entity';
 import { RemoveCartInput } from './dto/remove-cart-item.input';
 
 @Resolver(() => Cart)

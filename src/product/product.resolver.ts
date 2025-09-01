@@ -7,24 +7,26 @@ import {
   Args,
 } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Product } from './product.model';
 import { Vendor } from 'src/vendor/vendor.model';
 import { UseGuards, Scope, Injectable } from '@nestjs/common';
-import {
-  ChangeStateProductInput,
-  CreateProductInput,
-  DeleteProductInput,
-  ProductConnection,
-  ProductsPaginationInput,
-  SearchProductInput,
-  UpdateProductInput,
-} from './dto/product.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
-import { DataLoadersService } from './dataloaders/dataloaders.service';
-import { Image } from 'src/image/image.model';
+import { DataLoadersService } from '../common/dataloaders/dataloaders.service';
+import { Image } from 'src/image/entities/image.entity';
 import { Category } from 'src/category/category.model';
+import { Product } from './entities/product.entity';
+import {
+  ProductConnection,
+  ProductsPaginationInput,
+  SearchProductInput,
+} from './dto/connection-product';
+import { CreateProductInput } from './dto/create-product.dto';
+import {
+  ChangeStateProductInput,
+  UpdateProductInput,
+} from './dto/update-product.dto';
+import { DeleteProductInput } from './dto/delete-product.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 @Resolver(Product)

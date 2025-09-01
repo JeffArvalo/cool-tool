@@ -19,7 +19,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from 'src/auth/decorator/roles.decorator';
-import { OrderItem } from 'src/order-item/entities/orderItem.entity';
+import { OrderItem } from 'src/order-item/entities/order-item.entity';
 import { OrderItemService } from 'src/order-item/order-item.service';
 
 @Resolver(() => Order)

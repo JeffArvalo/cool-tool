@@ -1,6 +1,6 @@
 import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Category } from 'src/category/category.model';
-import { Image } from 'src/image/image.model';
+import { Image } from 'src/image/entities/image.entity';
 import { Vendor } from 'src/vendor/vendor.model';
 
 @ObjectType()

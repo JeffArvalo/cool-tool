@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator';
 import { CreateOrderInput } from './create-order.input';
-import { InputType, Field, Int, PartialType, ID } from '@nestjs/graphql';
+import { InputType, Field, PartialType, ID } from '@nestjs/graphql';
 
 @InputType()
 export class UpdateOrderInput extends PartialType(CreateOrderInput) {

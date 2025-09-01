@@ -1,8 +1,8 @@
 import { ObjectType, Field, Int, ID, Float } from '@nestjs/graphql';
-import { Product } from 'src/product/product.model';
+import { Product } from 'src/product/entities/product.entity';
 
 @ObjectType()
-export class CartItem {
+export class OrderItem {
   @Field(() => ID, { nullable: true })
   id: string;
 

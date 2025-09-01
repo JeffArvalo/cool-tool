@@ -3,11 +3,11 @@ import { ProductService } from './product.service';
 import { ProductResolver } from './product.resolver';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { VendorService } from 'src/vendor/vendor.service';
-import { DataLoadersService } from './dataloaders/dataloaders.service';
-import { VendorDataLoader } from './dataloaders/vendor.dataloader';
-import { ImageDataLoader } from './dataloaders/image.dataloader';
+import { DataLoadersService } from '../common/dataloaders/dataloaders.service';
+import { VendorDataLoader } from '../common/dataloaders/vendor.dataloader';
+import { ImageDataLoader } from '../common/dataloaders/image.dataloader';
 import { ImageService } from 'src/image/image.service';
-import { CategoryDataLoader } from './dataloaders/category.dataloader';
+import { CategoryDataLoader } from '../common/dataloaders/category.dataloader';
 import { CategoryService } from 'src/category/category.service';
 
 @Module({

@@ -1,7 +1,7 @@
 import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
-import { CartItem } from './entities/cartItem.entity';
+import { CartItem } from './entities/cart-item.entity';
 import { ProductDataLoader } from '../common/dataloaders/product.dataloader';
-import { Product } from 'src/product/product.model';
+import { Product } from 'src/product/entities/product.entity';
 
 @Resolver(() => CartItem)
 export class CartItemResolver {
